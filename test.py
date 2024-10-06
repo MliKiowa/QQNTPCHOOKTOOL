@@ -6,7 +6,7 @@ import requests
 
 s = requests.Session()
 
-DOMAIN = "192.168.1.246:6779"
+DOMAIN = "10.1.242.236:6779"
 
 
 def on_message(message, data):
@@ -154,10 +154,7 @@ def on_message(message, data):
 
 def main():
     # pid = frida.spawn(program="/usr/bin/qq", argv=["--no-sandbox"])
-    pid = frida.spawn(
-        program="C:\\Program Files\\Tencent\\QQNT\\QQ.exe",
-        cwd="C:\\Program Files\\Tencent\\QQNT",
-    )
+    pid = frida.spawn(program="D:\\AppD\\QQNT\\QQ.exe", argv=["--enable-logging"])
     session = frida.attach(pid)
     frida.resume(pid)
 
