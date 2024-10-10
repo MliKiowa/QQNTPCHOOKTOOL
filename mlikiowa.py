@@ -2,11 +2,8 @@ import frida
 import sys
 import json
 import struct
-import requests
 
-s = requests.Session()
 
-DOMAIN = "192.168.1.246:6779"
 
 
 def on_message(message, data):
@@ -23,7 +20,7 @@ def on_message(message, data):
                 "result": j["result"],
                 "key": j["key"],
             }
-            s.post(f"http://{DOMAIN}/tea", data=json.dumps(o))
+            print(json.dumps(o))
 
             try:
                 b = bytes.fromhex(j["data"])
@@ -84,7 +81,7 @@ def on_message(message, data):
                     "type": "unknown",
                     "source": 0,
                 }
-                s.post(f"http://{DOMAIN}/packet", data=json.dumps(o))
+                print(json.dumps(o))
             except:
                 pass
         elif t == "tea_decrypt":
@@ -95,7 +92,7 @@ def on_message(message, data):
                 "result": j["result"],
                 "key": j["key"],
             }
-            s.post(f"http://{DOMAIN}/tea", data=json.dumps(o))
+            print(json.dumps(o))
 
             try:
                 b = bytes.fromhex(j["result"])
@@ -127,7 +124,7 @@ def on_message(message, data):
                     "type": "unknown",
                     "source": 0,
                 }
-                s.post(f"http://{DOMAIN}/packet", data=json.dumps(o))
+                print(json.dumps(o))
             except:
                 pass
         elif t == "aes_encrypt":
@@ -138,7 +135,7 @@ def on_message(message, data):
                 "result": j["result"] + " " + j["tag"],
                 "key": j["key"] + " " + j["iv"],
             }
-            s.post(f"http://{DOMAIN}/tea", data=json.dumps(o))
+            print(json.dumps(o))
         elif t == "aes_decrypt":
             o = {
                 "mode": "aes",
@@ -147,22 +144,19 @@ def on_message(message, data):
                 "result": j["result"],
                 "key": j["key"] + " " + j["iv"],
             }
-            s.post(f"http://{DOMAIN}/tea", data=json.dumps(o))
+            print(json.dumps(o))
     except:
         print(message)
 
 
 def main():
     # pid = frida.spawn(program="/usr/bin/qq", argv=["--no-sandbox"])
-    pid = frida.spawn(
-        program="C:\\Program Files\\Tencent\\QQNT\\QQ.exe",
-        cwd="C:\\Program Files\\Tencent\\QQNT",
-    )
+    pid = frida.spawn(program="D:\\AppD\\QQNT\\QQ.exe", argv=["--enable-logging"])
     session = frida.attach(pid)
     frida.resume(pid)
 
     while True:
-        with open("hook.js", encoding="utf-8") as f:
+        with open("hooktea.js", encoding="utf-8") as f:
             script = session.create_script(f.read())
             script.on("message", on_message)
             script.load()
